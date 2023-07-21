@@ -89,14 +89,15 @@ class QuadTree():
 
         self.devided = True
 
-    def get_all_points_from_children(self):
+    def get_all_points_from_children(self, radius):
         points = []        
         points.extend(self.points)        
         if self.devided:
-            points.extend(self.ne.get_all_points_from_children())
-            points.extend(self.se.get_all_points_from_children())
-            points.extend(self.nw.get_all_points_from_children())
-            points.extend(self.sw.get_all_points_from_children())        
+            # if quad in radius around the point
+            points.extend(self.ne.get_all_points_from_children(0))
+            points.extend(self.se.get_all_points_from_children(0))            
+            points.extend(self.nw.get_all_points_from_children(0))
+            points.extend(self.sw.get_all_points_from_children(0))        
         return points
 
 
@@ -108,7 +109,7 @@ class QuadTree():
         if point in self.points:            
             print('Point:', point.id, 'found in', self.type, 'and depth:', self.depth)             
             if self.devided:
-                points.extend(self.get_all_points_from_children())
+                points.extend(self.get_all_points_from_children(0))
             else:
                 points.extend(self.points)
 
@@ -131,7 +132,10 @@ class QuadTree():
                     points.extend(p)  
 
         return points        
-                
+
+    def extended_search(self, distance):
+        pass
+
         
             
     def find_quad_closer_than_distance(self, point, distance):           
@@ -276,15 +280,20 @@ if __name__ == "__main__":
         
         because I am using computer generated random numbers I run the program multiple times to test it"""
 
+
+    import sys
+    sys.setrecursionlimit(3000)
+    print(sys.getrecursionlimit())
     file = {}
     
     num_of_experiments = 100
-    number_of_points_in_area = 250
-    size_of_square_area = 1000
-    node_capacity = 10
+    number_of_points_in_area = 10000
+    size_of_square_area = 10000
+    node_capacity = 25
+    search_radius = 100
 
     # run number of experiments and save results to json file
-    for n in range(1, num_of_experiments):       
+    for n in range(0, num_of_experiments):       
         dataframe = DataFrame(size_of_square_area, number_of_points_in_area, node_capacity)
 
         random_point_id_search = random.randint(0,number_of_points_in_area-1) 
