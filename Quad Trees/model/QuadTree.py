@@ -3,7 +3,8 @@ from PyQt6.QtCore import QObject, pyqtSignal
 
 class QuadTree(QObject):
     devision = pyqtSignal(object)
-    def __init__(self, type,root, boundary, depth, node_capacity) -> None:
+
+    def __init__(self, type, root, boundary, depth, node_capacity) -> None:
         QObject.__init__(self, parent=None)
         self.type = type
         if type == 'root':
@@ -30,6 +31,7 @@ class QuadTree(QObject):
 
     def insert_point(self, point):
         if self.has_capacity() and not self.devided:
+            print('inserting point at', self.depth, self.type)
             self.points.append(point)
         else:
             if not self.devided:
@@ -49,8 +51,7 @@ class QuadTree(QObject):
                 self.boundary.dy / 2) <= point.y <= self.boundary.dy:
             self.ne.insert_point(point)
             return True
-        elif (
-                self.boundary.dx / 2) <= point.x <= self.boundary.dx and self.boundary.y <= point.y <= (
+        elif (self.boundary.dx / 2) <= point.x <= self.boundary.dx and self.boundary.y <= point.y <= (
                 self.boundary.dy / 2):
             self.se.insert_point(point)
             return True
@@ -59,17 +60,21 @@ class QuadTree(QObject):
             return False
 
     def devide(self):
-
-        self.nw = QuadTree('nw', self.root, Boundry(self.boundary.x, ((self.boundary.y + self.boundary.dy) / 2),
-                                         ((self.boundary.x + self.boundary.dx) / 2), self.boundary.dy), self.depth + 1,
+        self.nw = QuadTree('nw', self.root,
+                           Boundry(self.boundary.x, ((self.boundary.y + self.boundary.dy) / 2),
+                                                    ((self.boundary.x + self.boundary.dx) / 2), self.boundary.dy),
+                           self.depth + 1,
                            self.capacity)
-        self.sw = QuadTree('sw',self.root, Boundry(self.boundary.x, self.boundary.y, ((self.boundary.x + self.boundary.dx) / 2),
-                                         ((self.boundary.y + self.boundary.dy) / 2)), self.depth + 1, self.capacity)
-        self.ne = QuadTree('ne',self.root,
-                           Boundry(((self.boundary.x + self.boundary.dx) / 2), ((self.boundary.y + self.boundary.dy) / 2),
+        self.sw = QuadTree('sw', self.root,
+                           Boundry(self.boundary.x, self.boundary.y, ((self.boundary.x + self.boundary.dx) / 2),
+                                   ((self.boundary.y + self.boundary.dy) / 2)), self.depth + 1, self.capacity)
+        self.ne = QuadTree('ne', self.root,
+                           Boundry(((self.boundary.x + self.boundary.dx) / 2),
+                                   ((self.boundary.y + self.boundary.dy) / 2),
                                    self.boundary.dx, self.boundary.dy), self.depth + 1, self.capacity)
-        self.se = QuadTree('se',self.root, Boundry(((self.boundary.x + self.boundary.dx) / 2), self.boundary.y, self.boundary.dx,
-                                         ((self.boundary.y + self.boundary.dy) / 2)), self.depth + 1, self.capacity)
+        self.se = QuadTree('se', self.root,
+                           Boundry(((self.boundary.x + self.boundary.dx) / 2), self.boundary.y, self.boundary.dx,
+                                   ((self.boundary.y + self.boundary.dy) / 2)), self.depth + 1, self.capacity)
 
         self.devided = True
 
@@ -132,7 +137,7 @@ class Boundry():
         self.cx = (x + dx) / 2
         self.cy = (y + dy) / 2
 
-        print('new devision', self.x, self.cx, self.dx, self.y, self.cy, self.dy)
+        # print('new devision', self.x, self.cx, self.dx, self.y, self.cy, self.dy)
 
 
 class Point():
@@ -141,4 +146,3 @@ class Point():
 
         self.x = x
         self.y = y
-

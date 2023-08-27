@@ -22,6 +22,7 @@ class AppController:
 
     def init_mainWindow(self):
         self.mainWindow.init.clicked.connect(self.setExperiment)
+        self.mainWindow.test.clicked.connect(self.test)
         self.mainWindow.graphWidget.scene().sigMouseClicked.connect(self.mouse_clicked)
 
         self.plt.plot([0, self.experiment.x, self.experiment.x, 0, 0],
@@ -34,6 +35,18 @@ class AppController:
         self.experiment = Experiment(self.mainWindow.x.value(), self.mainWindow.y.value(),
                                      self.mainWindow.capacity.value())
 
+    def test(self):
+        for n in range(0, 15):
+            x = 550
+            y = 350
+            if self.experiment.withinBoundraies(x, y):
+                # print(f'clicked plot X: {x}, Y: {y}, points are within boundaries')
+                self.plt.plot([x], [y], pen='r', symbol='x', symbolPen='r',
+                              symbolBrush=0.01)
+
+                self.quadTree.insert_point(Point('id' + str(x) + str(y), x, y))
+
+        print(self.quadTree.get_all_points_from_children(10))
     def mouse_clicked(self, event):
 
         vb = self.plt.plotItem.vb
@@ -57,5 +70,5 @@ class AppController:
 
         x = [data.boundary.x, data.boundary.dx, data.boundary.dx, data.boundary.x]
         y = [data.boundary.y, data.boundary.y, data.boundary.dy, data.boundary.dy]
-        print('deviding')
+        # print('deviding')
         self.plt.plot(x, y, pen='b', symbolBrush=0.1)
